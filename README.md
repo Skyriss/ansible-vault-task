@@ -11,7 +11,7 @@ This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 1 task
 **nginx.yaml**
 1. Installs [nginx](https://nginx.org) webserver
 2. Uploads and reloads default nginx configuration
-3. Reload nginx configuration
+3. Reloads nginx configuration
 
 ## Usage
 **run_machine.tf** Terraform configuration file uses variables:
@@ -53,7 +53,7 @@ As a result you'll get a ``invent.yml` file generated after instance run and rea
 
 Run these:
 ```
-ansible-playbook nginx.yaml -i invent.yml
+$ ansible-playbook nginx.yaml -i invent.yml
 ```
 This will install nginx using apt.
 
