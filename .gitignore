@@ -34,3 +34,5 @@ override.tf.json
 *.swp
 #Ansible inventroty
 invent.*
+#Ansible temp files
+*.retry

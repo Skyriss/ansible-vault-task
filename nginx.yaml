@@ -1,0 +1,36 @@
+
+- hosts: 
+    - webserver
+
+  tasks:
+    - name: Update apt repos
+      action: apt update_cache=yes cache_valid_time=3600
+
+    - name: Install nginx webserver
+      action: apt pkg=nginx state=present
+
+    - name: Copy nginx site-conf file to client
+      copy: 
+        src: test.ru
+        dest: /etc/nginx/sites-available
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Create a symbolic link to sites-enabled
+      file:
+        src: /etc/nginx/sites-available/test.ru
+        dest: /etc/nginx/sites-enabled/test.ru
+        owner: root
+        group: root
+        state: link
+
+    - name: Remove default config file
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+
+    - name: Reload configuration for nginx service
+      service:
+        name: nginx
+        state: reloaded 

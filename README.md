@@ -3,7 +3,7 @@
 This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 1 task
 
 **run_machine.tf**
-1. Creates VPS in DigitalOcean
+1. Creates VPS in DigitalOcean with Debian 10
 2. Deploys local SSH public key to DigitalOcean account
 3. Deploys stored SSH public key to VPS
 4. Creates Ansible playbook using ``inventory.tpl``template file
@@ -19,6 +19,7 @@ This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 1 task
 >Please, replace **"sample"** with your data.
 
 ### Running the machine
+
 Run these:
 ```
  $ terraform init
@@ -44,5 +45,13 @@ To destroy:
 
 ``$ terraform destroy  -var-file=sample.tfvars``
 
+As a result you'll get a ``invent.yml` file generated after instance run and ready to be used by Ansible.
+
 ### Configuring the machine
-TODO
+
+Run these:
+```
+ansible-playbook nginx.yaml -i invent.yml
+```
+This will install nginx using apt.
+y default nginx is running on port 80.
