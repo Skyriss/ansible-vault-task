@@ -6,10 +6,12 @@ This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 1 task
 1. Creates VPS in DigitalOcean with Debian 10
 2. Deploys local SSH public key to DigitalOcean account
 3. Deploys stored SSH public key to VPS
-4. Creates Ansible playbook using ``inventory.tpl``template file
+4. Creates Ansible inventory file ``invent.yml`` using ``inventory.tpl`` template file
 
 **nginx.yaml**
 1. Installs [nginx](https://nginx.org) webserver
+2. Uploads and reloads default nginx configuration
+3. Reload nginx configuration
 
 ## Usage
 **run_machine.tf** Terraform configuration file uses variables:
@@ -54,4 +56,4 @@ Run these:
 ansible-playbook nginx.yaml -i invent.yml
 ```
 This will install nginx using apt.
-y default nginx is running on port 80.
+
