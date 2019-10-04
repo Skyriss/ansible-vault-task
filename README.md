@@ -2,6 +2,10 @@
 
 This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 1 task
 
+###Requirements
+* [Terraform](https://www.terraform.io) >= 0.12
+* [Ansible](https://www.ansible.com/) ~>2.5.1
+
 **run_machine.tf**
 1. Creates VPS in DigitalOcean with Debian 10
 2. Deploys local SSH public key to DigitalOcean account
@@ -45,9 +49,9 @@ and run these:
 ```
 To destroy:
 
-``$ terraform destroy
+``$ terraform destroy``
 
-As a result you'll get a ``invent.yml` file generated after instance run and ready to be used by Ansible.
+As a result you'll get a ``invent.yml`` file generated after instance run and ready to be used by Ansible.
 
 ### Configuring the machine
 
