@@ -32,7 +32,7 @@ To destroy:
 
 ``$ terraform destroy -var="do_token=sample" -var="ssh_key_name=sample.pub"``
 
-or you can store variables values in external ``sample.tfvars`` file:
+or you can store variables values in external ``sample.terraform.tfvars`` file and rename it to ``terraform.tfvars``:
 ```
 do_token = sample
 ssh_keyfile = sample.pub
@@ -40,12 +40,12 @@ ssh_keyfile = sample.pub
 and run these:
 ```
  $ terraform init
- $ terraform plan -var-file=sample.tfvars
- $ terraform apply -var-file=sample.tfvars
+ $ terraform plan
+ $ terraform apply
 ```
 To destroy:
 
-``$ terraform destroy  -var-file=sample.tfvars``
+``$ terraform destroy
 
 As a result you'll get a ``invent.yml` file generated after instance run and ready to be used by Ansible.
 
