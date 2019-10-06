@@ -1,6 +1,6 @@
 ## General
 
-This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 1 task
+This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 2 task
 
 ###Requirements
 * [Terraform](https://www.terraform.io) >= 0.12
@@ -14,11 +14,14 @@ This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 1 task
 
 **nginx.yaml**
 1. Installs [nginx](https://nginx.org) webserver
-2. Uploads and reloads default nginx configuration
+2. Uploads ``nginx.conf`` configuration file, generated according to template from ``template``
+directory
+3. Uploads vhosts configuration files, generated according to templates from ``template``
+directory
 3. Reloads nginx configuration
 
 ## Usage
-**run_machine.tf** Terraform configuration file uses variables:
+**run_machine.tf** Terraform configuration file uses variables, stored in ``terraform.tfvars``:
 * **do_token**  - Token for DigitalOcean account
 * **ssh_keyfile** - Fullpath to the public SSH keyfile
 
@@ -26,17 +29,7 @@ This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 1 task
 
 ### Running the machine
 
-Run these:
-```
- $ terraform init
- $ terraform plan -var="do_token=sample" -var="ssh_keyfile=sample.pub"
- $ terraform apply -var="do_token=sample" -var="ssh_key_name=sample.pub"
-```
-To destroy:
-
-``$ terraform destroy -var="do_token=sample" -var="ssh_key_name=sample.pub"``
-
-or you can store variables values in external ``sample.terraform.tfvars`` file and rename it to ``terraform.tfvars``:
+Replace ``sample`` in ``terraform.tfvars`` file with apropriate data
 ```
 do_token = sample
 ssh_keyfile = sample.pub
@@ -59,5 +52,5 @@ Run these:
 ```
 $ ansible-playbook nginx.yaml -i invent.yml
 ```
-This will install nginx using apt.
+This will install nginx using apt and upload valid config files.
 
