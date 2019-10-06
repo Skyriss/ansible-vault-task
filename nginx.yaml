@@ -1,36 +1,81 @@
-
+---
 - hosts: 
     - webserver
+  vars:
+   host1:
+     hostname: farstone0
+     port: 80
+   host2:
+     hostname: farstone1
+     port: 8080
 
   tasks:
-    - name: Update apt repos
-      action: apt update_cache=yes cache_valid_time=3600
+    - name: Installing nginx webserver
+      apt: 
+        allow_unauthenticated: yes 
+        name: nginx
+        state: present
 
-    - name: Install nginx webserver
-      action: apt pkg=nginx state=present
-
-    - name: Copy nginx site-conf file to client
-      copy: 
-        src: test.ru
-        dest: /etc/nginx/sites-available
+    - name: Installing new nginx config
+      template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
         owner: root
         group: root
         mode: '0644'
+      notify: reload_nginx
 
-    - name: Create a symbolic link to sites-enabled
-      file:
-        src: /etc/nginx/sites-available/test.ru
-        dest: /etc/nginx/sites-enabled/test.ru
-        owner: root
-        group: root
-        state: link
-
-    - name: Remove default config file
+    - name: Remove default vhost config file
       file:
         path: /etc/nginx/sites-enabled/default
         state: absent
+      notify: reload_nginx      
 
-    - name: Reload configuration for nginx service
+    - name: Installing first vhost config
+      vars:
+        hostname: "{{ host1.hostname }}"
+        port: "{{ host1.port  }}"
+      template: 
+        src: farstone.devops.srwx.net.conf.j2
+        dest: /etc/nginx/sites-available/{{ hostname }}.devops.srwx.net.conf
+        owner: root
+        group: root
+        mode: '0644'
+      notify: reload_nginx
+
+    - name: Installing second vhost config
+      vars:
+        hostname: "{{ host2.hostname }}"
+        port: "{{ host2.port }}"
+      template:
+        src: farstone.devops.srwx.net.conf.j2
+        dest: /etc/nginx/sites-available/{{ hostname }}.devops.srwx.net.conf
+        owner: root
+        group: root
+        mode: '0644'
+      notify: reload_nginx
+
+    - name: Create a symbolic link to sites-enabled
+      file:
+        src: /etc/nginx/sites-available/{{ host1.hostname }}.devops.srwx.net.conf
+        dest: /etc/nginx/sites-enabled/{{ host1.hostname }}.devops.srwx.net.conf
+        owner: root
+        group: root
+        state: link
+      notify: reload_nginx
+
+    - name: Create a symbolic link to sites-enabled
+      file:
+        src: /etc/nginx/sites-available/{{ host2.hostname }}.devops.srwx.net.conf
+        dest: /etc/nginx/sites-enabled/{{ host2.hostname }}.devops.srwx.net.conf
+        owner: root
+        group: root
+        state: link
+      notify: reload_nginx
+
+
+  handlers:
+    - name: reload_nginx
       service:
         name: nginx
         state: reloaded 
