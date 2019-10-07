@@ -1,17 +1,9 @@
 ---
 - hosts: 
     - webserver
-  vars:
-   host1:
-     hostname: farstone0
-     port: 80
-   host2:
-     hostname: farstone1
-     port: 8080
-
   tasks:
     - name: Installing nginx webserver
-      apt: 
+      apt:
         allow_unauthenticated: yes 
         name: nginx
         state: present
@@ -32,47 +24,28 @@
       notify: reload_nginx      
 
     - name: Installing first vhost config
-      vars:
-        hostname: "{{ host1.hostname }}"
-        port: "{{ host1.port  }}"
       template: 
-        src: farstone.devops.srwx.net.conf.j2
-        dest: /etc/nginx/sites-available/{{ hostname }}.devops.srwx.net.conf
+        src: virtualhost.conf.j2
+        dest: /etc/nginx/sites-available/{{ item.hostname }}.devops.srwx.net.conf
         owner: root
         group: root
         mode: '0644'
-      notify: reload_nginx
-
-    - name: Installing second vhost config
-      vars:
-        hostname: "{{ host2.hostname }}"
-        port: "{{ host2.port }}"
-      template:
-        src: farstone.devops.srwx.net.conf.j2
-        dest: /etc/nginx/sites-available/{{ hostname }}.devops.srwx.net.conf
-        owner: root
-        group: root
-        mode: '0644'
+      loop:
+        - { hostname: 'farstone0', port: '80'}
+        - { hostname: 'farstone1', port: '8080'}
       notify: reload_nginx
 
     - name: Create a symbolic link to sites-enabled
       file:
-        src: /etc/nginx/sites-available/{{ host1.hostname }}.devops.srwx.net.conf
-        dest: /etc/nginx/sites-enabled/{{ host1.hostname }}.devops.srwx.net.conf
+        src: /etc/nginx/sites-available/{{ item }}.devops.srwx.net.conf
+        dest: /etc/nginx/sites-enabled/{{ item }}.devops.srwx.net.conf
         owner: root
         group: root
         state: link
+      loop:
+        - 'farstone0'
+        - 'farstone1'
       notify: reload_nginx
-
-    - name: Create a symbolic link to sites-enabled
-      file:
-        src: /etc/nginx/sites-available/{{ host2.hostname }}.devops.srwx.net.conf
-        dest: /etc/nginx/sites-enabled/{{ host2.hostname }}.devops.srwx.net.conf
-        owner: root
-        group: root
-        state: link
-      notify: reload_nginx
-
 
   handlers:
     - name: reload_nginx

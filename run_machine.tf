@@ -36,6 +36,7 @@ resource "null_resource" "generate_inventfile" {
   provisioner "local-exec" {
     command = "echo \"${data.template_file.ansible_inventory.rendered}\" > invent.yml"
   }
+  depends_on = [data.template_file.ansible_inventory]
 }
 
 data "template_file" "ansible_inventory" {
@@ -45,6 +46,13 @@ data "template_file" "ansible_inventory" {
     ip_address = digitalocean_droplet.www.ipv4_address
   }
   depends_on = [digitalocean_droplet.www]
+}
+
+resource "null_resource" "run_playbook" {
+  provisioner "local-exec" {
+    command = "ansible-playbook nginx.yaml -i invent.yml -u root"
+  }
+  depends_on = [null_resource.generate_inventfile]
 }
 
 output "instance_ipv4_addr" {

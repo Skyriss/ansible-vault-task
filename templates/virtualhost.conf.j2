@@ -1,0 +1,10 @@
+server {
+  listen {{ item.port }};
+  
+  server_name {{ item.hostname  }}.devops.srwx.net;
+
+  location / {
+    return 200 "OK {{ item.hostname  }}";
+  }
+
+}
