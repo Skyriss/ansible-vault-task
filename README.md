@@ -11,12 +11,13 @@ This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 2 task
 2. Deploys local SSH public key to DigitalOcean account
 3. Deploys stored SSH public key to VPS
 4. Creates Ansible inventory file ``invent.yml`` using ``inventory.tpl`` template file
+5. Runs Ansible playbook with inventory file created
 
 **nginx.yaml**
 1. Installs [nginx](https://nginx.org) webserver
-2. Uploads ``nginx.conf`` configuration file, generated according to template from ``template``
+2. Uploads ``nginx.conf`` configuration file, generated according to template from ``templates``
 directory
-3. Uploads vhosts configuration files, generated according to templates from ``template``
+3. Uploads vhosts configuration files, generated according to templates from ``templates``
 directory
 3. Reloads nginx configuration
 
@@ -44,13 +45,14 @@ To destroy:
 
 ``$ terraform destroy``
 
-As a result you'll get a ``invent.yml`` file generated after instance run and ready to be used by Ansible.
+As a result you'll get a ``invent.yml`` file generated after instance run and ready to be used by Ansible.  Ansible 
+playbook ``ngixn.yaml`` will be run also.
 
 ### Configuring the machine
 
 Run these:
 ```
-$ ansible-playbook nginx.yaml -i invent.yml
+$ ansible-playbook nginx.yaml -i invent.yml -u root
 ```
 This will install nginx using apt and upload valid config files.
 
