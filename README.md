@@ -46,7 +46,7 @@ To destroy:
 ``$ terraform destroy``
 
 As a result you'll get a ``invent.yml`` file generated after instance run and ready to be used by Ansible.  Ansible 
-playbook ``ngixn.yaml`` will be run also.
+playbook ``nginx.yaml`` will be run also.
 
 ### Configuring the machine
 
