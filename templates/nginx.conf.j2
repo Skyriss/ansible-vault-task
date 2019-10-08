@@ -4,7 +4,11 @@ pid /run/nginx.pid;
 include /etc/nginx/modules-enabled/*.conf;
 
 events {
-	worker_connections 768;
+       {% if mem_size|int <= 1500 %}
+	worker_connections 1024;
+       {% else %}
+        worker_connections 2048;
+       {% endif %}
 	# multi_accept on;
 }
 

@@ -1,14 +1,27 @@
 ---
 - hosts: 
     - webserver
+
+  vars:
+    mem_size: 2048
+
   tasks:
-    - name: Installing nginx webserver
+    - name: Installing nginx webserver on Debian
       apt:
         allow_unauthenticated: yes 
         name: nginx
         state: present
+      when: ansible_facts['os_family'] == 'Debian'
+
+    - name: Installing nginx webserver on Centos
+      yum:
+        name: nginx
+        state: present
+      when: ansible_facts['os_family'] == 'RedHat'
 
     - name: Installing new nginx config
+      vars:
+        mem_size: "{{ ansible_facts['memtotal_mb'] }}"
       template:
         src: nginx.conf.j2
         dest: /etc/nginx/nginx.conf
@@ -26,25 +39,25 @@
     - name: Installing first vhost config
       template: 
         src: virtualhost.conf.j2
-        dest: /etc/nginx/sites-available/{{ item.hostname }}.devops.srwx.net.conf
+        dest: /etc/nginx/sites-available/{{ ansible_facts['os_family'] }}_{{ item.hostname }}.devops.srwx.net.conf
         owner: root
         group: root
         mode: '0644'
       loop:
-        - { hostname: 'farstone0', port: '80'}
-        - { hostname: 'farstone1', port: '8080'}
+        - { hostname: 'host1', port: '80'}
+        - { hostname: 'host2', port: '8080'}
       notify: reload_nginx
 
     - name: Create a symbolic link to sites-enabled
       file:
-        src: /etc/nginx/sites-available/{{ item }}.devops.srwx.net.conf
-        dest: /etc/nginx/sites-enabled/{{ item }}.devops.srwx.net.conf
+        src: /etc/nginx/sites-available/{{ ansible_facts['os_family'] }}_{{ item }}.devops.srwx.net.conf
+        dest: /etc/nginx/sites-enabled/{{ ansible_facts['os_family'] }}_{{ item }}.devops.srwx.net.conf
         owner: root
         group: root
         state: link
       loop:
-        - 'farstone0'
-        - 'farstone1'
+        - 'host1'
+        - 'host2'
       notify: reload_nginx
 
   handlers:
