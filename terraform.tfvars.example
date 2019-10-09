@@ -1,0 +1,7 @@
+do_token = ""
+ssh_keyfile = ""
+aws_access_key = ""
+aws_secret_key = ""
+domain = ""
+nbr = ""
+hostname = ""
