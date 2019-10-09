@@ -4,6 +4,14 @@
 
   vars:
     mem_size: 2048
+    domain_name: "devops.rebrain.srwx.net"
+    host_params:
+      - hostname: "farstone-0"
+        port: "8080"
+      - hostname: "farstone-1"
+        port: "8080"
+      - hostname: "_"
+        port: "80"
 
   tasks:
     - name: Installing nginx webserver on Debian
@@ -30,34 +38,30 @@
         mode: '0644'
       notify: reload_nginx
 
-    - name: Remove default vhost config file
+    - name: Removing default vhost config file
       file:
         path: /etc/nginx/sites-enabled/default
         state: absent
       notify: reload_nginx      
 
-    - name: Installing first vhost config
+    - name: Installing vhost config
       template: 
         src: virtualhost.conf.j2
-        dest: /etc/nginx/sites-available/{{ ansible_facts['os_family'] }}_{{ item.hostname }}.devops.srwx.net.conf
+        dest: /etc/nginx/sites-available/{{ item.hostname }}.{{ domain_name }}.conf
         owner: root
         group: root
         mode: '0644'
-      loop:
-        - { hostname: 'host1', port: '80'}
-        - { hostname: 'host2', port: '8080'}
+      loop: "{{ host_params }}"
       notify: reload_nginx
 
     - name: Create a symbolic link to sites-enabled
       file:
-        src: /etc/nginx/sites-available/{{ ansible_facts['os_family'] }}_{{ item }}.devops.srwx.net.conf
-        dest: /etc/nginx/sites-enabled/{{ ansible_facts['os_family'] }}_{{ item }}.devops.srwx.net.conf
+        src: /etc/nginx/sites-available/{{ item.hostname }}.{{ domain_name }}.conf
+        dest: /etc/nginx/sites-enabled/{{ item.hostname }}.{{ domain_name }}.conf
         owner: root
         group: root
         state: link
-      loop:
-        - 'host1'
-        - 'host2'
+      loop: "{{ host_params }}"
       notify: reload_nginx
 
   handlers:

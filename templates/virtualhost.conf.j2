@@ -1,10 +1,21 @@
 server {
-  listen {{ item.port }};
-  
-  server_name {{ item.hostname  }}.devops.srwx.net;
+  {% if item.hostname == "_" %}
+  listen 80;
+
+  server_name _;
 
   location / {
-    return 200 "OK {{ item.hostname  }}";
+    return 403 "access to root is forbidden";
   }
+  {% else %}
+  listen {{ item.port }};
+
+  server_name {{ item.hostname  }}.{{ domain_name }};
+
+  location / {
+    root /{{ item.hostname }};
+    return 200 "OK {{ item.hostname }}";
+  }
+  {% endif %}
 
 }
