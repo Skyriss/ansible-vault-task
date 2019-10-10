@@ -1,6 +1,6 @@
 ## General
 
-This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 2 task
+This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 3 task
 
 ### Requirements
 * [Terraform](https://www.terraform.io) >= 0.12
@@ -11,31 +11,32 @@ This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 2 task
 2. Deploys local SSH public key to DigitalOcean account
 3. Deploys stored SSH public key to VPS
 4. Creates Ansible inventory file ``invent.yml`` using ``inventory.tpl`` template file
-5. Runs Ansible playbook with inventory file created
+5. Creates domain names in AWS and links it to created VPS.
+6. Runs Ansible playbook with inventory file created
 
 **nginx.yaml**
-1. Installs [nginx](https://nginx.org) webserver
+1. Installs [nginx](https://nginx.org) webserver using apt or yum depending on OS family
 2. Uploads ``nginx.conf`` configuration file, generated according to template from ``templates``
-directory
+directory. Some parameters depends on VPS's properties.
 3. Uploads vhosts configuration files, generated according to templates from ``templates``
-directory
+directory.
 3. Reloads nginx configuration
 
 ## Usage
 **run_machine.tf** Terraform configuration file uses variables, stored in ``terraform.tfvars``:
 * **do_token**  - Token for DigitalOcean account
 * **ssh_keyfile** - Fullpath to the public SSH keyfile
+* **aws_access_key** - AWS access key
+* **aws_secret_key** - AWS secret key
+* **domain** - top domain name
+* **nbr** - Amount of domain names needed
+* **hostname** - Base hostname of virtual hosts
 
 >Please, replace **"sample"** with your data.
 
 ### Running the machine
 
-Replace ``sample`` in ``terraform.tfvars`` file with apropriate data
-```
-do_token = sample
-ssh_keyfile = sample.pub
-```
-and run these:
+Fill ``terraform.tfvars`` file with correct variable values  and run these:
 ```
  $ terraform init
  $ terraform plan
