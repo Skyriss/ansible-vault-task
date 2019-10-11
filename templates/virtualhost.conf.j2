@@ -1,21 +1,10 @@
+{% for host in host_params %}
 server {
-  {% if item.hostname == "_" %}
-  listen 80;
-
-  server_name _;
-
+  listen {{ host.port }};
+  server_name {{ host.hostname }}{% if host.hostname != "_" %}.{{ domain_name }}{% endif %};
   location / {
-    return 403 "access to root is forbidden";
+    return 200 "You're in {% if host.hostname != "_" %}{{ host.hostname }}.{% endif %}{{ domain_name }}! Hello, there! ";
   }
-  {% else %}
-  listen {{ item.port }};
-
-  server_name {{ item.hostname  }}.{{ domain_name }};
-
-  location / {
-    root /{{ item.hostname }};
-    return 200 "OK {{ item.hostname }}";
-  }
-  {% endif %}
-
 }
+{% endfor %}
+

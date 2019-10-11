@@ -1,6 +1,6 @@
 ## General
 
-This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 3 task
+This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 4 task
 
 ### Requirements
 * [Terraform](https://www.terraform.io) >= 0.12
@@ -18,7 +18,7 @@ This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 3 task
 1. Installs [nginx](https://nginx.org) webserver using apt or yum depending on OS family
 2. Uploads ``nginx.conf`` configuration file, generated according to template from ``templates``
 directory. Some parameters depends on VPS's properties.
-3. Uploads vhosts configuration files, generated according to templates from ``templates``
+3. Uploads single vhost configuration file, generated according to template from ``templates``
 directory.
 3. Reloads nginx configuration
 

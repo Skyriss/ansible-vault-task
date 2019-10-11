@@ -47,21 +47,19 @@
     - name: Installing vhost config
       template: 
         src: virtualhost.conf.j2
-        dest: /etc/nginx/sites-available/{{ item.hostname }}.{{ domain_name }}.conf
+        dest: /etc/nginx/sites-available/{{domain_name}}.conf
         owner: root
         group: root
         mode: '0644'
-      loop: "{{ host_params }}"
       notify: reload_nginx
 
     - name: Create a symbolic link to sites-enabled
       file:
-        src: /etc/nginx/sites-available/{{ item.hostname }}.{{ domain_name }}.conf
-        dest: /etc/nginx/sites-enabled/{{ item.hostname }}.{{ domain_name }}.conf
+        src: /etc/nginx/sites-available/{{ domain_name }}.conf
+        dest: /etc/nginx/sites-enabled/{{ domain_name }}.conf
         owner: root
         group: root
         state: link
-      loop: "{{ host_params }}"
       notify: reload_nginx
 
   handlers:
