@@ -1,0 +1,8 @@
+---
+package_names:
+  - nginx
+domain_name: ""
+host_params:
+  - hostname: "_"
+    port: "80"
+

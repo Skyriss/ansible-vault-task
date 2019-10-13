@@ -1,0 +1,10 @@
+{% for host in host_params %}
+server {
+  listen {{ host.port }};
+  server_name {{ host.hostname }}{% if host.hostname != "_" %}.{{ domain_name }}{% endif %};
+  location / {
+    return 200 "You're in {% if host.hostname != "_" %}{{ host.hostname }}.{% endif %}{{ domain_name }}! Hello, there! ";
+  }
+}
+{% endfor %}
+

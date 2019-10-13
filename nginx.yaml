@@ -2,68 +2,22 @@
 - hosts: 
     - webserver
 
-  vars:
-    mem_size: 2048
-    domain_name: "devops.rebrain.srwx.net"
-    host_params:
-      - hostname: "farstone-0"
-        port: "8080"
-      - hostname: "farstone-1"
-        port: "8080"
-      - hostname: "_"
-        port: "80"
+  roles:
+    - base
 
-  tasks:
-    - name: Installing nginx webserver on Debian
-      apt:
-        allow_unauthenticated: yes 
-        name: nginx
-        state: present
-      when: ansible_facts['os_family'] == 'Debian'
-
-    - name: Installing nginx webserver on Centos
-      yum:
-        name: nginx
-        state: present
-      when: ansible_facts['os_family'] == 'RedHat'
-
-    - name: Installing new nginx config
+    - role: packages
       vars:
-        mem_size: "{{ ansible_facts['memtotal_mb'] }}"
-      template:
-        src: nginx.conf.j2
-        dest: /etc/nginx/nginx.conf
-        owner: root
-        group: root
-        mode: '0644'
-      notify: reload_nginx
+        package_names:
+          - nginx
 
-    - name: Removing default vhost config file
-      file:
-        path: /etc/nginx/sites-enabled/default
-        state: absent
-      notify: reload_nginx      
+    - role: www
+      vars:
+        domain_name: "devops.rebrain.srwx.net"
+        host_params:
+          - hostname: "farstone-0"
+            port: "8080"
+          - hostname: "farstone-1"
+            port: "8080"
+          - hostname: "_"
+            port: "80"
 
-    - name: Installing vhost config
-      template: 
-        src: virtualhost.conf.j2
-        dest: /etc/nginx/sites-available/{{domain_name}}.conf
-        owner: root
-        group: root
-        mode: '0644'
-      notify: reload_nginx
-
-    - name: Create a symbolic link to sites-enabled
-      file:
-        src: /etc/nginx/sites-available/{{ domain_name }}.conf
-        dest: /etc/nginx/sites-enabled/{{ domain_name }}.conf
-        owner: root
-        group: root
-        state: link
-      notify: reload_nginx
-
-  handlers:
-    - name: reload_nginx
-      service:
-        name: nginx
-        state: reloaded 

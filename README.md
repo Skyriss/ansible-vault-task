@@ -1,6 +1,11 @@
 ## General
 
-This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 4 task
+This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 5 task.
+Ansible playbook, used in this repo uses three roles:
+* **base** - provides basic OS configuration
+* **packages** - is used to install chosen packages
+* **www** - installs nginx (using depended packages role), generates and pushes
+``nginx.conf`` and vhost.conf files.
 
 ### Requirements
 * [Terraform](https://www.terraform.io) >= 0.12
@@ -16,10 +21,8 @@ This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 4 task
 
 **nginx.yaml**
 1. Installs [nginx](https://nginx.org) webserver using apt or yum depending on OS family
-2. Uploads ``nginx.conf`` configuration file, generated according to template from ``templates``
-directory. Some parameters depends on VPS's properties.
-3. Uploads single vhost configuration file, generated according to template from ``templates``
-directory.
+2. Uploads ``nginx.conf`` configuration file, generated according to template.
+3. Uploads single vhost configuration file, generated according to template.
 3. Reloads nginx configuration
 
 ## Usage
