@@ -1,10 +1,25 @@
 {% for host in host_params %}
+{% for id in range(0,host.nbr) %} 
+{% for port in host.ports %}
 server {
-  listen {{ host.port }};
-  server_name {{ host.hostname }}{% if host.hostname != "_" %}.{{ domain_name }}{% endif %};
+  listen {{ port }}{% if port == 443 %} ssl{% endif %};
+  server_name {{ host.hostname }}{% if host.hostname != "_" %}{% if host.nbr > 1 %}-{{ id }}{% endif %}.{{ domain_name }}{% endif %};
+
+  access_log /var/log/nginx/nginx.{{ host.hostname }}.access.log;
+  error_log /var/log/nginx/nginx.{{ host.hostname }}.error.log; 
+
+  {% if port == 443 %}
+  keepalive_timeout   70;
+  ssl_certificate     /etc/ssl/{{ host.hostname }}{% if host.hostname != "_" %}{% if host.nbr > 1 %}-{{ id }}{% endif %}.{{ domain_name }}.crt;
+  ssl_certificate_key /etc/ssl/{{ host.hostname }}{% if host.hostname != "_" %}{% if host.nbr > 1 %}-{{ id }}{% endif %}.{{ domain_name }}.key;
+  ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+  {% endif %}
+
   location / {
-    return 200 "You're in {% if host.hostname != "_" %}{{ host.hostname }}.{% endif %}{{ domain_name }}! Hello, there! ";
+    return 200 "You're in {{ host.hostname }}{% if host.hostname != "_" %}{% if host.nbr > 1 %}-{{ id }}{% endif %}.{{ domain_name }}{% endif %}! Hello, there! ";
   }
 }
+{% endfor %}
+{% endfor %} 
 {% endfor %}
 

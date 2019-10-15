@@ -1,6 +1,8 @@
 ---
 - hosts: 
     - webserver
+  vars:
+    domain_name: "devops.rebrain.srwx.net"
 
   roles:
     - base
@@ -9,15 +11,16 @@
       vars:
         package_names:
           - nginx
+          - letsencrypt
 
     - role: www
       vars:
-        domain_name: "devops.rebrain.srwx.net"
         host_params:
-          - hostname: "farstone-0"
-            port: "8080"
-          - hostname: "farstone-1"
-            port: "8080"
-          - hostname: "_"
-            port: "80"
-
+          - hostname: "farstone"
+            ports:
+              - "80"
+              - "443"
+            nbr: 1
+    - role: letsencrypt
+      vars:
+        - ssl_key_dir: "/etc/ssl"

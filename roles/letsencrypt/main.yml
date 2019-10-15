@@ -1,0 +1,9 @@
+---
+- name: Create ssl directory
+  local_action:
+    module: file
+    path: "{{ ssl_key_dir }}/{{ domain }}"
+    mode: 0700
+    state: directory
+  become: no
+  run_once: true
