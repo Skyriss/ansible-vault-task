@@ -3,7 +3,8 @@
     - webserver
   vars:
     domain_name: "devops.rebrain.srwx.net"
-
+    nginx_root_dir: "/var/www"
+    ssl_key_dir: "/etc/ssl/certs"
   roles:
     - base
 

@@ -34,3 +34,10 @@
     state: link
   notify: reload_nginx
 
+- name: Create folder for website
+  file:
+    path: {{ nginx_root_dir }}/{{ item }}.{{ domain_name }}
+    owner: root
+    group: root
+    mode: '0755'
+    state: directory

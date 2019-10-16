@@ -14,7 +14,7 @@
     name: "{{ item }}"
     state: present
   loop: "{{ package_names }}"
-  when: ansible_facts['os_family'] == 'Debian'
+  when: ansible_facts['os_family'] == 'RedHat'
   tags: "common"
 
 - name: Install nginx (apt)
@@ -30,6 +30,6 @@
     update_cache: yes
     name: "nginx"
     state: present
-  when: ansible_facts['os_family'] == 'Debian'
+  when: ansible_facts['os_family'] == 'RedHat'
   tags: "common"
 
