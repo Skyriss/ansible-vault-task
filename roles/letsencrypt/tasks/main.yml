@@ -3,16 +3,21 @@
   git:
     repo: "https://github.com/letsencrypt/letsencrypt"
     dest: "/opt/letsencrypt"
+
 - name: Create ssl directory
   file:
     path: "{{ ssl_key_dir }}"
+    owner: root
+    group: root
     mode: 0750
     state: directory
 
 - name: Create challenge directory
   file:
-    path: "{{ nginx_root_dir }}/farstone.{{ domain_name }}/.well-nkown/acme-challenge"
-    mode: 0755
+    path: "{{ nginx_root_dir }}/farstone-0.{{ domain_name }}/.well-known/acme-challenge"
+    owner: www-data
+    group: www-data
+    mode: 0555
     state: directory
     
 - name: Create ssl directory
@@ -54,30 +59,58 @@
     path: "{{ ssl_key_dir }}/{{ domain_name }}/domain.csr"
   register: domain_csr
 
-- name: "Create CSR for domain"
-  openssl_csr:
-    path: "{{ ssl_key_dir }}/{{ domain_name }}/domain.csr"
-    privatekey_path: "{{ ssl_key_dir }}/{{ domain_name }}/account.key"
-    force: yes
+  #- name: "Create CSR for domain"
+  #openssl_csr:
+  #  path: "{{ ssl_key_dir }}/{{ domain_name }}/domain.csr"
+  #  privatekey_path: "{{ ssl_key_dir }}/{{ domain_name }}/account.key"
+  #  force: yes
 
-  #- name: Generate domain.csr
-  #  shell: openssl req -new -sha256 -key "{{ ssl_key_dir }}/{{ domain_name }}/domain.key" -subj "/CN={{ domain_name }}" > "{{ ssl_key_dir }}/{{ domain_name }}/domain.csr"
-  #  when: domain_csr.stat.exists == False
+- name: Generate domain.csr
+  shell: openssl req -new -sha256 -key "{{ ssl_key_dir }}/{{ domain_name }}/domain.key" -subj "/CN=farstone-0.{{ domain_name }}" > "{{ ssl_key_dir }}/{{ domain_name }}/domain.csr"
+  when: domain_csr.stat.exists == False
 
 - name: Create a challenge for farstone.devops.rebrain.srwx.net
   acme_certificate:
-    account_key_src: /etc/ssl/private/devops.pem
+    account_key_src: "{{ ssl_key_dir }}/{{ domain_name }}/account.key"
     csr: "{{ ssl_key_dir }}/{{ domain_name }}/domain.csr"
     dest: "{{ ssl_key_dir }}/{{ domain_name }}/devops.crt"
+    fullchain_dest: "{{ ssl_key_dir }}/{{ domain_name }}/devops-fullchain.pem"
+    chain_dest: "{{ ssl_key_dir }}/{{ domain_name }}/devops-chain.pem"
+    account_email: "alex.farstone@gmail.com"
     acme_directory: "https://acme-v02.api.letsencrypt.org/directory"
     acme_version: 2
     terms_agreed: "yes"
     challenge: "http-01"
-  register: farstone_challenge
+    #    remaining_days: "{{ letsencrypt_remaining_days }}"
+    modify_account: "yes"
+  register: create_challenge
 
-- debug:
-    msg: 'test={{ farstone_challenge }}'
+- name: debug
+  debug:
+    msg: "{{ create_challenge.challenge_data }}"
+- name: Copy challenge data
+  copy:
+    content: "{{ create_challenge.challenge_data[fqdn]['http-01']['resource_value'] }}"
+    dest: "{{ nginx_root_dir }}/farstone-0.{{ domain_name }}/.well-known/acme-challenge/{{ create_challenge.challenge_data[fqdn]['http-01']['resource'] | basename }}"
+    owner: www-data
+    group: www-data
+    mode: 0555
+  register: challenge_ok
 
-    #- copy:
-    #dest: /var/www/html/{{ sample_com_challenge['challenge_data']['sample.com']['http-01']['resource'] }}
-    #content: "{{ sample_com_challenge['challenge_data']['sample.com']['http-01']['resource_value'] }}"
+- name: Create certificate
+  acme_certificate:
+    account_key_src: "{{ ssl_key_dir }}/{{ domain_name }}/account.key"
+    csr: "{{ ssl_key_dir }}/{{ domain_name }}/domain.csr"
+    dest: "{{ ssl_key_dir }}/{{ domain_name }}/devops.crt"
+    fullchain_dest: "{{ ssl_key_dir }}/{{ domain_name }}/devops-fullchain.pem"
+    chain_dest: "{{ ssl_key_dir }}/{{ domain_name }}/devops-chain.pem"
+    account_email: "alex.farstone@gmail.com"
+    acme_directory: "https://acme-v02.api.letsencrypt.org/directory"
+    acme_version: 2
+    terms_agreed: "yes"
+    challenge: "http-01"
+    #    remaining_days: "{{ letsencrypt_remaining_days }}"
+    modify_account: "yes"
+    data: "{{ create_challenge }}"
+  register: verify_challenge
+

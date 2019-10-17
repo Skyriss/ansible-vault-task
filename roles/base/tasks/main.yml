@@ -11,3 +11,6 @@
   command: "python get-pip.py"
   args:
     chdir: /tmp
+- name: Install pyOpenSSL
+  pip:
+    name: pyopenssl
