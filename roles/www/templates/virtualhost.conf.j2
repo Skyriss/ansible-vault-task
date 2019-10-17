@@ -5,10 +5,10 @@ server {
   listen {{ port }}{% if port == 443 %} ssl{% endif %};
   server_name {{ host.hostname }}{% if host.hostname != "_" %}{% if host.nbr > 1 %}-{{ id }}{% endif %}.{{ domain_name }}{% endif %};
 
-  access_log /var/log/nginx/nginx.{{ host.hostname }}.{% if host.nbr > 1 %}-{{ id }}{% endif %}access.log;
-  error_log /var/log/nginx/nginx.{{ host.hostname }}.{% if host.nbr > 1 %}-{{ id }}{% endif %}error.log; 
+  access_log /var/log/nginx/nginx.{{ host.hostname }}{% if host.nbr > 1 %}-{{ id }}{% endif %}.access.log;
+  error_log /var/log/nginx/nginx.{{ host.hostname }}{% if host.nbr > 1 %}-{{ id }}{% endif %}.error.log; 
 
-i  {% if port == 443 %}
+  {% if port == 443 %}
   keepalive_timeout   70;
   ssl_certificate     {{ ssl_key_dir }}/{{ host.hostname }}{% if host.hostname != "_" %}{% if host.nbr > 1 %}-{{ id }}{% endif %}.{{ domain_name }}{% endif %}.crt;
   ssl_certificate_key {{ ssl_key_dir }}/{{ host.hostname }}{% if host.hostname != "_" %}{% if host.nbr > 1 %}-{{ id }}{% endif %}.{{ domain_name }}{% endif %}.key;

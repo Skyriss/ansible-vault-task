@@ -1,3 +1,13 @@
 ---
 - name: Install Python
   raw: apt-get update && apt-get install python-minimal -y
+
+- name: Download get-pip.py
+  get_url:
+      url: 'https://bootstrap.pypa.io/get-pip.py'
+      dest: /tmp/get-pip.py
+
+- name: Install pip
+  command: "python get-pip.py"
+  args:
+    chdir: /tmp

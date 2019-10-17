@@ -1,3 +1,4 @@
 ---
 package_names:
   - python-minimal
+  - git
