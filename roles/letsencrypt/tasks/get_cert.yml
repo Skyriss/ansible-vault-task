@@ -1,0 +1,97 @@
+---
+- name: debug
+  debug:
+    msg: "{{ item }}"
+
+- name: Create challenge directory
+  file:
+    path: "{{ nginx_root_dir }}/{{ item }}/.well-known/acme-challenge"
+    owner: www-data
+    group: www-data
+    mode: 0555
+    state: directory
+    
+- name: Create ssl directory
+  file:
+    path: "{{ ssl_key_dir }}/{{ item }}"
+    mode: 0750
+    state: directory
+
+- name: Find account.key
+  stat:
+    path: "{{ ssl_key_dir }}/{{ item }}/account.key"
+  register: account_key
+
+- name: Generate RSA 4096 account key
+  openssl_privatekey:
+    path: "{{ ssl_key_dir }}/{{ item }}/account.key"
+    type: RSA
+    size: 4096
+  when: account_key.stat.exists == False
+
+- name: Find domain.key
+  stat:
+    path: "{{ ssl_key_dir }}/{{ item }}/domain.key"
+  register: domain_key
+
+- name: Generate RSA 4096 domain key
+  openssl_privatekey:
+    path: "{{ ssl_key_dir }}/{{ item }}/domain.key"
+    type: RSA
+    size: 4096
+  when: domain_key.stat.exists == False
+
+- name: Find domain.csr
+  stat:
+    path: "{{ ssl_key_dir }}/{{ item }}/domain.csr"
+  register: domain_csr
+
+- name: Generate domain.csr
+  shell: openssl req -new -sha256 -key "{{ ssl_key_dir }}/{{ item }}/domain.key" -subj "/CN={{ item }}" > "{{ ssl_key_dir }}/{{ item }}/domain.csr"
+  when: domain_csr.stat.exists == False
+
+- name: Create a challenge for farstone.devops.rebrain.srwx.net
+  acme_certificate:
+    account_key_src: "{{ ssl_key_dir }}/{{ item }}/account.key"
+    csr: "{{ ssl_key_dir }}/{{ item }}/domain.csr"
+    dest: "{{ ssl_key_dir }}/{{ item }}/devops.crt"
+    fullchain_dest: "{{ ssl_key_dir }}/{{ item }}/devops-fullchain.pem"
+    chain_dest: "{{ ssl_key_dir }}/{{ item }}/devops-chain.pem"
+    account_email: "alex.farstone@gmail.com"
+    acme_directory: "https://acme-v02.api.letsencrypt.org/directory"
+    acme_version: 2
+    terms_agreed: "yes"
+    challenge: "http-01"
+    #    remaining_days: "{{ letsencrypt_remaining_days }}"
+    modify_account: "yes"
+  register: create_challenge
+
+- name: debug
+  debug:
+    msg: "{{ create_challenge.challenge_data }}"
+
+- name: Copy challenge data
+  copy:
+    content: "{{ create_challenge.challenge_data[item]['http-01']['resource_value'] }}"
+    dest: "{{ nginx_root_dir }}/{{ item }}/.well-known/acme-challenge/{{ create_challenge.challenge_data[item]['http-01']['resource'] | basename }}"
+    owner: www-data
+    group: www-data
+    mode: 0555
+  register: challenge_ok
+
+- name: Create certificate
+  acme_certificate:
+    account_key_src: "{{ ssl_key_dir }}/{{ item }}/account.key"
+    csr: "{{ ssl_key_dir }}/{{ item }}/domain.csr"
+    dest: "{{ ssl_key_dir }}/{{ item }}/devops.crt"
+    fullchain_dest: "{{ ssl_key_dir }}/{{ item }}/devops-fullchain.pem"
+    chain_dest: "{{ ssl_key_dir }}/{{ item }}/devops-chain.pem"
+    account_email: "alex.farstone@gmail.com"
+    acme_directory: "https://acme-v02.api.letsencrypt.org/directory"
+    acme_version: 2
+    terms_agreed: "yes"
+    challenge: "http-01"
+    #    remaining_days: "{{ letsencrypt_remaining_days }}"
+    modify_account: "yes"
+    data: "{{ create_challenge }}"
+  register: verify_challenge

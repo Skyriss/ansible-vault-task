@@ -71,7 +71,7 @@ data "aws_route53_zone" "selected" {
 resource "aws_route53_record" "farstone" {
   count = "${var.nbr}"
   zone_id = "${data.aws_route53_zone.selected.zone_id}"
-  name    = "${var.hostname}-${count.index}.${var.domain}"
+  name    = "${var.hostname}${count.index}.${var.domain}"
   type    = "A"
   ttl     = "300"
   records = ["${digitalocean_droplet.www.ipv4_address}"]

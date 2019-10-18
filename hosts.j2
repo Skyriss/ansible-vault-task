@@ -1,0 +1,1 @@
+{% for host in host_params %}{% for id in range(0,host.nbr) %}{{ host.hostname }}{{ id }}.{{ domain_name }}{{ "," if not loop.last else "" }}{% endfor %}{% endfor %}

@@ -5,19 +5,27 @@
     domain_name: "devops.rebrain.srwx.net"
     nginx_root_dir: "/var/www"
     ssl_key_dir: "/etc/ssl/certs"
-    fqdn: "farstone-0.{{ domain_name }}"
     host_params:
       - hostname: "farstone"
         ports:
-          - "80"
-          - "443"
-        nbr: 1    
+          - 80
+          - 443
+        nbr: 2
     package_names:
       - nginx
       - letsencrypt
       - git
+  
+        #$  tasks:
+        #    - name: Prepare hostnames variable
+        #      set_fact: 
+        #        fqdn: "{{ (lookup('template', './hosts.j2').split(',')) | replace('\\n','')}}"
+
+        #    - name: Debug
+        #      debug:
+        #        msg: "{{ fqdn }}"
   roles:
           #- base
-          #    - packages
-          #    - www
-    - letsencrypt
+          #  - packages
+  - www
+  - letsencrypt

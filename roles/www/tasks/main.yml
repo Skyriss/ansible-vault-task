@@ -1,4 +1,8 @@
 ---
+- name: Prepare hostnames variable
+  set_fact:
+    fqdn: "{{ (lookup('template', './hosts.j2').split(',')) | replace('\\n','')}}"
+
 - name: Install new nginx config
   vars:
     mem_size: "{{ ansible_facts['memtotal_mb'] }}"
@@ -36,9 +40,10 @@
 
 - name: Create folder for website
   file:
-    path: "{{ nginx_root_dir }}/{{ item.hostname }}.{{ domain_name }}"
+    path: "{{ nginx_root_dir }}/{{ item }}"
     owner: root
     group: root
     mode: '0755'
     state: directory
-  loop: "{{ host_params }}"
+  loop: "{{ fqdn }}"
+
