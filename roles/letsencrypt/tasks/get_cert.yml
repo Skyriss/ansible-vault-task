@@ -62,7 +62,7 @@
     acme_version: 2
     terms_agreed: "yes"
     challenge: "http-01"
-    #    remaining_days: "{{ letsencrypt_remaining_days }}"
+    remaining_days: "{{ letsencrypt_remaining_days }}"
     modify_account: "yes"
   register: create_challenge
 
@@ -83,15 +83,15 @@
   acme_certificate:
     account_key_src: "{{ ssl_key_dir }}/{{ item }}/account.key"
     csr: "{{ ssl_key_dir }}/{{ item }}/domain.csr"
-    dest: "{{ ssl_key_dir }}/{{ item }}/devops.crt"
-    fullchain_dest: "{{ ssl_key_dir }}/{{ item }}/devops-fullchain.pem"
-    chain_dest: "{{ ssl_key_dir }}/{{ item }}/devops-chain.pem"
+    dest: "{{ ssl_key_dir }}/{{ item }}/signed.crt"
+    fullchain_dest: "{{ ssl_key_dir }}/{{ item }}/signed-fullchain.pem"
+    chain_dest: "{{ ssl_key_dir }}/{{ item }}/signed-chain.pem"
     account_email: "alex.farstone@gmail.com"
     acme_directory: "https://acme-v02.api.letsencrypt.org/directory"
     acme_version: 2
     terms_agreed: "yes"
     challenge: "http-01"
-    #    remaining_days: "{{ letsencrypt_remaining_days }}"
+    remaining_days: "{{ letsencrypt_remaining_days }}"
     modify_account: "yes"
     data: "{{ create_challenge }}"
   register: verify_challenge

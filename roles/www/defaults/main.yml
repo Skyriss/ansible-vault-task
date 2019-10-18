@@ -1,7 +1,7 @@
 ---
+nginx_root_dir: "/var/www"
 domain_name: ""
 host_params:
   - hostname: "_"
-    port: "80"
-    nbr: "1"
+    nbr: 1
 

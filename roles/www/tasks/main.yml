@@ -47,3 +47,12 @@
     state: directory
   loop: "{{ fqdn }}"
 
+- name: Put index.html
+  template:
+    src: index.j2
+    dest: "{{ nginx_root_dir }}/{{ item }}/index.html"
+    owner: www-data
+    group: www-data
+    mode: '0644'
+  loop: "{{ fqdn }}"
+
