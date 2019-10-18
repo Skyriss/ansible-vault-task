@@ -1,15 +1,17 @@
 ## General
 
-This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 5 task.
+This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 6 task.
 Ansible playbook, used in this repo uses three roles:
 * **base** - provides basic OS configuration
 * **packages** - is used to install chosen packages
 * **www** - installs nginx (using depended packages role), generates and pushes
-``nginx.conf`` and vhost.conf files.
+``nginx.conf`` and ``vhost.conf`` files for HTTP.
+* **letsencrypt** - generates and pushes SSL certificates, generates and pushes
+``vhost.conf`` files for HTTPS.
 
 ### Requirements
 * [Terraform](https://www.terraform.io) >= 0.12
-* [Ansible](https://www.ansible.com/) ~>2.5.1
+* [Ansible](https://www.ansible.com/) >=2.8
 
 **run_machine.tf**
 1. Creates VPS in DigitalOcean with Debian 10
@@ -23,7 +25,9 @@ Ansible playbook, used in this repo uses three roles:
 1. Installs [nginx](https://nginx.org) webserver using apt or yum depending on OS family
 2. Uploads ``nginx.conf`` configuration file, generated according to template.
 3. Uploads single vhost configuration file, generated according to template.
-3. Reloads nginx configuration
+4. Reloads nginx configuration
+5. Generates SSL certificates
+6. Uploads vhost configuration file for  HTTPS, generated according to template.
 
 ## Usage
 **run_machine.tf** Terraform configuration file uses variables, stored in ``terraform.tfvars``:

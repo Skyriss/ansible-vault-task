@@ -4,5 +4,5 @@ nginx_root_dir: "/var/www"
 ssl_key_dir: "/etc/ssl/certs"
 domain_name: ""
 host_params:
-      - hostname: ""
-        nbr: 1
+  - hostname: ""
+    nbr: 1

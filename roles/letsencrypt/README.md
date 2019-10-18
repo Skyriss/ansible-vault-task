@@ -1,16 +1,19 @@
 # Ansible NGINX role
 
-This role installs NGINX Open Source on your target host, generates and installs configuration files.
+iThis role generates ACME SSL certificates and configures NGINX Open Source on your target host to use HTTPS.
 
 
 ## Role Variables
 
 This role has several variables. The defaults are the following:
 ```
+letsencrypt_remaining_days: 15
+nginx_root_dir: "/var/www"
+ssl_key_dir: "/etc/ssl/certs"
 domain_name: ""
 host_params:
-  - hostname: "_"
-  - nbr: 1
+  - hostname: ""
+    nbr: 1
 ```
 Example: For ``john.doe0.example.com`` .. ``john.doe1.example.com`` fqdn, you need to have ``domain_name: "example.com"`` and
 ```
