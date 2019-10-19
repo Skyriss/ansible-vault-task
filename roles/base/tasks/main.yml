@@ -1,6 +1,12 @@
 ---
 - name: Install Python
-  raw: apt-get update && apt-get install python-minimal -y
+  include_tasks: apt.yml
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Install Python
+  include_tasks: yum.yml
+  when: ansible_facts['os_family'] == 'RedHat'
+
 
 - name: Download get-pip.py
   get_url:

@@ -32,7 +32,7 @@ data "digitalocean_ssh_key" "rebrain" {
 
 # Create a new Web Droplet
 resource "digitalocean_droplet" "www" {
-  image  = "debian-10-x64"
+  image  = "centos-7-x64"
   name   = "webserver"
   region = "nyc3"
   size   = "s-1vcpu-1gb"

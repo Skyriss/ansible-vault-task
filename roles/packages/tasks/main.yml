@@ -1,35 +1,9 @@
 ---
 - name: Install packages (apt)
-  apt:
-    update_cache: yes
-    name: "{{ item }}"
-    state: latest
-  loop: "{{ package_names }}"
+  include_tasks: apt.yml
   when: ansible_facts['os_family'] == 'Debian'
-  tags: "common"
 
 - name : Install packages (yum)
-  yum:
-    update_cache: yes
-    name: "{{ item }}"
-    state: latest
-  loop: "{{ package_names }}"
+  include_tasks: yum.yml
   when: ansible_facts['os_family'] == 'RedHat'
-  tags: "common"
-
-- name: Install nginx (apt)
-  apt:
-    update_cache: yes
-    name: "nginx"
-    state: present
-  when: ansible_facts['os_family'] == 'Debian'
-  tags: "nginx"
-
-- name : Install nginx (yum)
-  yum:
-    update_cache: yes
-    name: "nginx"
-    state: present
-  when: ansible_facts['os_family'] == 'RedHat'
-  tags: "nginx"
 

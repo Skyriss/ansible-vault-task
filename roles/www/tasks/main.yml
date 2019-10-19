@@ -3,6 +3,17 @@
   set_fact:
     fqdn: "{{ (lookup('template', './hosts.j2').split(',')) | replace('\\n','')}}"
 
+- name: Select Nginx user
+  set_fact:
+    nginx_user: "www-data"
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Select Nginx user
+  set_fact:
+    nginx_user: "nginx"
+  when: ansible_facts['os_family'] == 'RedHat'
+  
+
 - name: Install new nginx config
   vars:
     mem_size: "{{ ansible_facts['memtotal_mb'] }}"
@@ -19,6 +30,16 @@
     path: /etc/nginx/sites-enabled/default
     state: absent
   notify: reload_nginx
+
+- name: Create sites-enabled directory
+  file:
+    path: /etc/nginx/sites-enabled
+    state: directory
+
+- name: Create sites-available directory
+  file:
+    path: /etc/nginx/sites-available
+    state: directory    
 
 - name: Install vhost config
   template:
@@ -51,8 +72,12 @@
   template:
     src: index.j2
     dest: "{{ nginx_root_dir }}/{{ item }}/index.html"
-    owner: www-data
-    group: www-data
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_user }}"
     mode: '0644'
   loop: "{{ fqdn }}"
 
+- name: reload_nginx
+  service:
+    name: nginx
+    state: reloaded

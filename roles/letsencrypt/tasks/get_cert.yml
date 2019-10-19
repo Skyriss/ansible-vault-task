@@ -1,13 +1,19 @@
 ---
-- name: debug
-  debug:
-    msg: "{{ item }}"
+- name: Select Nginx user
+  set_fact:
+    nginx_user: "www-data"
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Select Nginx user
+  set_fact:
+    nginx_user: "nginx"
+  when: ansible_facts['os_family'] == 'RedHat'
 
 - name: Create challenge directory
   file:
     path: "{{ nginx_root_dir }}/{{ item }}/.well-known/acme-challenge"
-    owner: www-data
-    group: www-data
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_user }}"
     mode: 0555
     state: directory
     
@@ -46,9 +52,11 @@
     path: "{{ ssl_key_dir }}/{{ item }}/domain.csr"
   register: domain_csr
 
-- name: Generate domain.csr
-  shell: openssl req -new -sha256 -key "{{ ssl_key_dir }}/{{ item }}/domain.key" -subj "/CN={{ item }}" > "{{ ssl_key_dir }}/{{ item }}/domain.csr"
-  when: domain_csr.stat.exists == False
+- name: Create Certificate Signing Request
+  openssl_csr:
+    path: "{{ ssl_key_dir }}/{{ item }}/domain.csr"
+    privatekey_path: "{{ ssl_key_dir }}/{{ item }}/domain.key"
+    common_name: "{{ item }}"
 
 - name: Create a challenge for farstone.devops.rebrain.srwx.net
   acme_certificate:
@@ -74,8 +82,8 @@
   copy:
     content: "{{ create_challenge.challenge_data[item]['http-01']['resource_value'] }}"
     dest: "{{ nginx_root_dir }}/{{ item }}/.well-known/acme-challenge/{{ create_challenge.challenge_data[item]['http-01']['resource'] | basename }}"
-    owner: www-data
-    group: www-data
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_user }}"
     mode: 0555
   register: challenge_ok
 

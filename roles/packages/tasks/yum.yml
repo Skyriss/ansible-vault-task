@@ -1,0 +1,23 @@
+---
+- name : Install repo
+  yum:
+    update_cache: yes
+    name: "epel-release"
+    state: latest
+  tags: "common"
+
+- name : Install packages
+  yum:
+    update_cache: yes
+    name: "{{ item }}"
+    state: latest
+  loop: "{{ package_names }}"
+  tags: "common"
+
+- name : Install nginx
+  yum:
+    update_cache: yes
+    name: "nginx"
+    state: present
+  tags: "nginx"
+

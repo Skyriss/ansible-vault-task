@@ -1,4 +1,4 @@
-user www-data;
+{% if ansible_facts['os_family'] == 'Debian' %} user www-data{% elif ansible_facts['os_family'] == 'RedHat' %} user nginx{% endif %};
 worker_processes auto;
 pid /run/nginx.pid;
 include /etc/nginx/modules-enabled/*.conf;
