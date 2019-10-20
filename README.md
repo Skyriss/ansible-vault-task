@@ -1,6 +1,6 @@
 ## General
 
-This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 6 task.
+This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 8 task.
 Ansible playbook, used in this repo uses three roles:
 * **base** - provides basic OS configuration
 * **packages** - is used to install chosen packages
