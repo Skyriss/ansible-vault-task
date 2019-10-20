@@ -74,10 +74,6 @@
     modify_account: "yes"
   register: create_challenge
 
-- name: debug
-  debug:
-    msg: "{{ create_challenge.challenge_data }}"
-
 - name: Copy challenge data
   copy:
     content: "{{ create_challenge.challenge_data[item]['http-01']['resource_value'] }}"

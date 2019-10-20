@@ -13,9 +13,12 @@
       - letsencrypt
       - git
     - letsencrypt_remaining_days: 15
+    - nginx_sendfile_status: "on"
+    - nginx_tcp_nopush_status: "on"
+    - nginx_tcp_nodelay_status: "on"
 
   roles:
-  - base
-  - packages
-  - www
-  - letsencrypt
+#    - base
+#    - packages
+#    - www
+    - letsencrypt
