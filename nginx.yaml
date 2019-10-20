@@ -16,6 +16,7 @@
     - nginx_sendfile_status: "on"
     - nginx_tcp_nopush_status: "on"
     - nginx_tcp_nodelay_status: "on"
+    - nginx_max_connections: 40000
 
   roles:
 #    - base
