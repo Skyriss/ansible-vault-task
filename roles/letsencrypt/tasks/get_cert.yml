@@ -99,3 +99,4 @@
     modify_account: "yes"
     data: "{{ create_challenge }}"
   register: verify_challenge
+  ignore_errors: yes

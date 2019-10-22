@@ -1,13 +1,13 @@
 ---
 - hosts: 
-    - webserver
+    - all
   vars:
     - domain_name: "devops.rebrain.srwx.net"
     - nginx_root_dir: "/var/www"
     - ssl_key_dir: "/etc/ssl/certs"
     - host_params:
       - hostname: "farstone"
-        nbr: 1
+        nbr: 2
     - package_names:
       - nginx
       - letsencrypt
@@ -19,7 +19,9 @@
     - nginx_max_connections: 40000
 
   roles:
-#    - base
-#    - packages
-#    - www
-    - letsencrypt
+    - base
+    - packages
+    - www
+#    - letsencrypt
+    - mawalu.wireguard_private_networking
+

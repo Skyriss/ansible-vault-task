@@ -1,17 +1,20 @@
 ## General
 
-This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 8 task.
-Ansible playbook, used in this repo uses three roles:
+This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 9 task.
+Ansible playbook, used in this repo uses five roles:
 * **base** - provides basic OS configuration
 * **packages** - is used to install chosen packages
 * **www** - installs nginx (using depended packages role), generates and pushes
 ``nginx.conf`` and ``vhost.conf`` files for HTTP.
 * **letsencrypt** - generates and pushes SSL certificates, generates and pushes
 ``vhost.conf`` files for HTTPS.
+* **** - creates a VPN server
 
 ### Requirements
 * [Terraform](https://www.terraform.io) >= 0.12
 * [Ansible](https://www.ansible.com/) >=2.8
+* [mawalu.wireguard_private_networking](https://galaxy.ansible.com/mawalu/wireguard_private_networking)
+> Installing: ``ansible-galaxy install --roles-path %project_root%/roles mawalu.wireguard_private_networking``
 
 **run_machine.tf**
 1. Creates VPS in DigitalOcean with Debian 10
@@ -28,6 +31,10 @@ Ansible playbook, used in this repo uses three roles:
 4. Reloads nginx configuration
 5. Generates SSL certificates
 6. Uploads vhost configuration file for  HTTPS, generated according to template.
+7. Installs all common software
+8. Install Nginx webserver
+9. Generates configuration for HTTP and HTTPS
+10. Creates a VPN between nodes
 
 ## Usage
 **run_machine.tf** Terraform configuration file uses variables, stored in ``terraform.tfvars``:
@@ -41,7 +48,7 @@ Ansible playbook, used in this repo uses three roles:
 
 >Please, replace **"sample"** with your data.
 
-### Running the machine
+### Running the machine(s)
 
 Fill ``terraform.tfvars`` file with correct variable values  and run these:
 ```
@@ -56,7 +63,7 @@ To destroy:
 As a result you'll get a ``invent.yml`` file generated after instance run and ready to be used by Ansible.  Ansible 
 playbook ``nginx.yaml`` will be run also.
 
-### Configuring the machine
+### Configuring the machine(s)
 
 Run these:
 ```

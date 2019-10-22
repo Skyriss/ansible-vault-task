@@ -32,7 +32,8 @@ data "digitalocean_ssh_key" "rebrain" {
 
 # Create a new Web Droplet
 resource "digitalocean_droplet" "www" {
-  image  = "centos-7-x64"
+  count  = "${var.nbr}"
+  image  = "debian-10-x64"
   name   = "webserver"
   region = "nyc3"
   size   = "s-1vcpu-1gb"
@@ -47,17 +48,19 @@ resource "digitalocean_ssh_key" "local" {
 }
 
 resource "null_resource" "generate_inventfile" {
+  count = "${var.nbr}"
   provisioner "local-exec" {
-    command = "echo \"${data.template_file.ansible_inventory.rendered}\" > invent.yml"
+    command = "echo \"${element(data.template_file.ansible_inventory.*.rendered,count.index)}\" >> invent.yml"
   }
   depends_on = [data.template_file.ansible_inventory]
 }
 
 data "template_file" "ansible_inventory" {
+  count = "${var.nbr}"
   template = file("inventory.tpl")
   vars = {
-    hostname = digitalocean_droplet.www.name
-    ip_address = digitalocean_droplet.www.ipv4_address
+    hostname = element(digitalocean_droplet.www.*.name,count.index)
+    ip_address = element(digitalocean_droplet.www.*.ipv4_address,count.index)
   }
   depends_on = [digitalocean_droplet.www]
 }
@@ -74,14 +77,14 @@ resource "aws_route53_record" "farstone" {
   name    = "${var.hostname}${count.index}.${var.domain}"
   type    = "A"
   ttl     = "300"
-  records = ["${digitalocean_droplet.www.ipv4_address}"]
+  records = ["${element(digitalocean_droplet.www.*.ipv4_address,count.index)}"]
 }
 
 output "instance_ipv4_addr" {
-  value = digitalocean_droplet.www.ipv4_address
+  value = digitalocean_droplet.www.*.ipv4_address
   description = "IP address of created VPS"
 }
 
 output "inventory" {
-  value = data.template_file.ansible_inventory.rendered
+  value = data.template_file.ansible_inventory.*.rendered
 }

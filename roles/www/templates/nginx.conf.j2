@@ -17,7 +17,6 @@ http {
 	sendfile {{ nginx_sendfile_status }};
 	tcp_nopush {{ nginx_tcp_nopush_status }};
 	tcp_nodelay {{ nginx_tcp_nodelay_status }};
-  worker_rlimit_nofile {{ nginx_max_connections * 2 }};
 	keepalive_timeout 30;
 	types_hash_max_size 2048;
 	# server_tokens off;
@@ -39,8 +38,8 @@ http {
 	# Logging Settings
 	##
 
-	access_log /var/log/nginx/access.log crit;
-	error_log /var/log/nginx/error.log crit;
+	access_log /var/log/nginx/access.log;
+	error_log /var/log/nginx/error.log;
 
 	##
 	# Gzip Settings
