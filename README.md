@@ -17,6 +17,7 @@ Ansible playbook, used in this repo uses five roles:
 * [mawalu.wireguard_private_networking](https://galaxy.ansible.com/mawalu/wireguard_private_networking) 
 ansible role
 > Installing: ``ansible-galaxy install --roles-path %project_root%/roles mawalu.wireguard_private_networking``
+> Note: You need to configure inventory file according to Readme for ``mawalu.wireguard_private_networking`` role
 
 **run_machine.tf**
 1. Creates VPS in DigitalOcean with Debian 10
