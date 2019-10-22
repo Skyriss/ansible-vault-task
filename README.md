@@ -8,7 +8,7 @@ Ansible playbook, used in this repo uses five roles:
 ``nginx.conf`` and ``vhost.conf`` files for HTTP.
 * **letsencrypt** - generates and pushes SSL certificates, generates and pushes
 ``vhost.conf`` files for HTTPS.
-* **** - creates a VPN server
+* **mawalu.wireguard_private_networking** - creates a VPN server
 
 ### Requirements
 * [Terraform](https://www.terraform.io) >= 0.12
