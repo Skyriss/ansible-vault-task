@@ -13,7 +13,9 @@ Ansible playbook, used in this repo uses five roles:
 ### Requirements
 * [Terraform](https://www.terraform.io) >= 0.12
 * [Ansible](https://www.ansible.com/) >=2.8
-* [mawalu.wireguard_private_networking](https://galaxy.ansible.com/mawalu/wireguard_private_networking)
+* Debian OS
+* [mawalu.wireguard_private_networking](https://galaxy.ansible.com/mawalu/wireguard_private_networking) 
+ansible role
 > Installing: ``ansible-galaxy install --roles-path %project_root%/roles mawalu.wireguard_private_networking``
 
 **run_machine.tf**
