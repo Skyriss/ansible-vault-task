@@ -2,6 +2,10 @@
 
 This role installs NGINX Open Source on your target host, generates and installs configuration files.
 
+## Role dependencies
+This role require the following roles, that will be applied:
+* ``base``
+* ``packages``
 
 ## Role Variables
 

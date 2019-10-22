@@ -2,6 +2,11 @@
 
 iThis role generates ACME SSL certificates and configures NGINX Open Source on your target host to use HTTPS.
 
+## Role dependencies
+This role require the following roles, that will be applied:
+* ``base``
+* ``packages``
+* ``www``
 
 ## Role Variables
 
