@@ -1,7 +1,7 @@
 ---
-- name: Prepare hostnames variable
-  set_fact:
-    fqdn: "{{ (lookup('template', './hosts.j2').split(',')) | replace('\\n','')}}"
+#- name: Prepare hostnames variable
+#  set_fact:
+#    fqdn: "{{ (lookup('template', './hosts.j2').split(',')) | replace('\\n','')}}"
 
 - name: Update Letsencrypt
   git:

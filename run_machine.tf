@@ -47,24 +47,6 @@ resource "digitalocean_ssh_key" "local" {
   public_key = file(var.ssh_keyfile)
 }
 
-resource "null_resource" "generate_inventfile" {
-  count = "${var.nbr}"
-  provisioner "local-exec" {
-    command = "echo \"${element(data.template_file.ansible_inventory.*.rendered,count.index)}\" >> invent.yml"
-  }
-  depends_on = [data.template_file.ansible_inventory]
-}
-
-data "template_file" "ansible_inventory" {
-  count = "${var.nbr}"
-  template = file("inventory.tpl")
-  vars = {
-    hostname = element(digitalocean_droplet.www.*.name,count.index)
-    ip_address = element(digitalocean_droplet.www.*.ipv4_address,count.index)
-  }
-  depends_on = [digitalocean_droplet.www]
-}
-
 #Get DNS zone
 data "aws_route53_zone" "selected" {
   name = "${var.domain}"
@@ -85,6 +67,18 @@ output "instance_ipv4_addr" {
   description = "IP address of created VPS"
 }
 
-output "inventory" {
-  value = data.template_file.ansible_inventory.*.rendered
+locals {
+  ids = range(1,var.nbr+1)
+}
+
+resource "local_file" "ansible_inventory" {
+  count = "${var.nbr}"
+content = "all:\n    hosts:\n${join("\n",
+            formatlist(
+              "        %s:\n            ansible_host: %s\n            fqdn: %s\n            vpn_ip: 10.1.0.%s/32",
+              aws_route53_record.farstone.*.fqdn,
+              digitalocean_droplet.www.*.ipv4_address,
+              aws_route53_record.farstone.*.fqdn,
+              local.ids))}\n"   
+filename = "invent.yml"
 }

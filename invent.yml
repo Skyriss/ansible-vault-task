@@ -1,8 +1,10 @@
 all:
     hosts:
-        webserver0:
-            ansible_host: 134.209.172.4
+        farstone0.devops.rebrain.srwx.net:
+            ansible_host: 45.55.35.6
+            fqdn: farstone0.devops.rebrain.srwx.net
             vpn_ip: 10.1.0.1/32
-        webserver1:
-            ansible_host: 142.93.185.115
+        farstone1.devops.rebrain.srwx.net:
+            ansible_host: 159.203.80.57
+            fqdn: farstone1.devops.rebrain.srwx.net
             vpn_ip: 10.1.0.2/32
