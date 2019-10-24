@@ -20,3 +20,10 @@
 - name: Install pyOpenSSL
   pip:
     name: pyopenssl
+
+- name: Create sudo group
+  group:
+    name: sudo
+    state: present
+    system: yes
+

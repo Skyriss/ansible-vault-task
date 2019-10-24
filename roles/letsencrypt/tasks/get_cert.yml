@@ -73,6 +73,8 @@
     remaining_days: "{{ letsencrypt_remaining_days }}"
     modify_account: "yes"
   register: create_challenge
+  tags: 
+    - create-cert
 
 - name: Copy challenge data
   copy:
@@ -82,6 +84,8 @@
     group: "{{ nginx_user }}"
     mode: 0555
   register: challenge_ok
+  tags: 
+    - create-cert
 
 - name: Create certificate
   acme_certificate:
@@ -100,3 +104,19 @@
     data: "{{ create_challenge }}"
   register: verify_challenge
   ignore_errors: yes
+  tags: 
+    - create-cert
+
+- name: Move private key
+  copy:
+    src: "{{ playbook_dir }}/secretkey"
+    dest: "{{ ssl_key_dir }}/{{ item }}/domain.key"
+  tags: 
+    - copy-cert
+
+- name: Copy certificate
+  copy:
+    src: "{{ playbook_dir }}/signed.crt"
+    dest: "{{ ssl_key_dir }}/{{ item }}/signed.crt"
+  tags: 
+    - copy-cert

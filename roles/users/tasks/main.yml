@@ -1,0 +1,23 @@
+- name: Create users
+  user:
+    name: "{{ item.name | mandatory }}"
+    comment: "{{ item.comment | mandatory }}"
+    groups: "{{ item.groups | default([]) | join(',') }}"
+    shell: "{{ item.shell | default('/bin/bash') }}"
+    state: "{{ item.state | default('present') }}"
+    remove: "{{ item.remove | default('no') }}"
+    password: "*NP*"
+  with_items:
+    - "{{ users }}"
+  no_log: True
+
+- name: Add keys to users
+  authorized_key:
+    user: "{{ item.0.name }}"
+    key: "{{ item.1.key | mandatory}}"
+    state: "{{ item.1.state | default('present') }}"
+  with_subelements:
+    - "{{ users }}"
+    - ssh_keys
+  no_log: True
+

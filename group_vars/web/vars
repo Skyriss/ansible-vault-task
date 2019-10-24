@@ -1,0 +1,12 @@
+users: "{{ vault_users }}"
+domain_name: "{{ vault_domain_name }}"
+nginx_root_dir: "{{ vault_nginx_root_dir }}"
+ssl_key_dir: "{{ vault_ssl_key_dir }}"
+host_params: "{{ vault_host_params }}"
+package_names: "{{ vault_package_names }}"
+letsencrypt_remaining_days: "{{ vault_letsencrypt_remaining_days }}"
+nginx_sendfile_status: "{{ vault_nginx_sendfile_status }}"
+nginx_tcp_nopush_status: "{{ vault_nginx_tcp_nopush_status }}"
+nginx_tcp_nodelay_status: "{{ vault_nginx_tcp_nodelay_status }}"
+nginx_max_connections: "{{ vault_nginx_max_connections }}"
+

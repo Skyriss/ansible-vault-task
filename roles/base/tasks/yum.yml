@@ -1,3 +1,9 @@
 ---
 - name: Install Python
   raw: yum update -y && yum install python -y
+
+- name: Install sudo
+  apt:
+    update_cache: yes
+    name: sudo
+    state: present

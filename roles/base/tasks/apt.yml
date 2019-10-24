@@ -1,3 +1,9 @@
 ---
 - name: Install Python
   raw: apt-get update && apt-get install python-minimal -y
+
+- name: Install sudo
+  apt:
+    update_cache: yes
+    name: sudo
+    state: present
