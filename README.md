@@ -80,6 +80,8 @@ Run these:
 ```
 $ ansible-playbook nginx.yaml -i invent.yml -u root --vault-id inline@prompt --vault-id files@prompt
 ```
+> If you have ``{{ fqdn }}.crt`` and ``{{ fqdn }}.key`` files in playbook folder, they will be applied to new webserver.
+If not, they will be generated.
 > Due to this playbook have encrypted passwords, you'll need to input password for inline and files vault-ids
 
 
