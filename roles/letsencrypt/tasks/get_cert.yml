@@ -11,7 +11,7 @@
 
 - name: Create challenge directory
   file:
-    path: "{{ nginx_root_dir }}/{{ item }}/.well-known/acme-challenge"
+    path: "{{ nginx_root_dir }}/{{ fqdn }}/.well-known/acme-challenge"
     owner: "{{ nginx_user }}"
     group: "{{ nginx_user }}"
     mode: 0555
@@ -19,52 +19,50 @@
     
 - name: Create ssl directory
   file:
-    path: "{{ ssl_key_dir }}/{{ item }}"
+    path: "{{ ssl_key_dir }}/{{ fqdn }}"
     mode: 0750
     state: directory
 
 - name: Find account.key
   stat:
-    path: "{{ ssl_key_dir }}/{{ item }}/account.key"
+    path: "{{ ssl_key_dir }}/{{ fqdn }}/account.key"
   register: account_key
 
 - name: Generate RSA 4096 account key
   openssl_privatekey:
-    path: "{{ ssl_key_dir }}/{{ item }}/account.key"
+    path: "{{ ssl_key_dir }}/{{ fqdn }}/account.key"
     type: RSA
     size: 4096
-  when: account_key.stat.exists == False
 
 - name: Find domain.key
   stat:
-    path: "{{ ssl_key_dir }}/{{ item }}/domain.key"
+    path: "{{ ssl_key_dir }}/{{ fqdn }}/domain.key"
   register: domain_key
 
 - name: Generate RSA 4096 domain key
   openssl_privatekey:
-    path: "{{ ssl_key_dir }}/{{ item }}/domain.key"
+    path: "{{ ssl_key_dir }}/{{ fqdn }}/domain.key"
     type: RSA
     size: 4096
-  when: domain_key.stat.exists == False
 
 - name: Find domain.csr
   stat:
-    path: "{{ ssl_key_dir }}/{{ item }}/domain.csr"
+    path: "{{ ssl_key_dir }}/{{ fqdn }}/domain.csr"
   register: domain_csr
 
 - name: Create Certificate Signing Request
   openssl_csr:
-    path: "{{ ssl_key_dir }}/{{ item }}/domain.csr"
-    privatekey_path: "{{ ssl_key_dir }}/{{ item }}/domain.key"
-    common_name: "{{ item }}"
+    path: "{{ ssl_key_dir }}/{{ fqdn }}/domain.csr"
+    privatekey_path: "{{ ssl_key_dir }}/{{ fqdn }}/domain.key"
+    common_name: "{{ fqdn | join('')}}"
 
 - name: Create a challenge for farstone.devops.rebrain.srwx.net
   acme_certificate:
-    account_key_src: "{{ ssl_key_dir }}/{{ item }}/account.key"
-    csr: "{{ ssl_key_dir }}/{{ item }}/domain.csr"
-    dest: "{{ ssl_key_dir }}/{{ item }}/devops.crt"
-    fullchain_dest: "{{ ssl_key_dir }}/{{ item }}/devops-fullchain.pem"
-    chain_dest: "{{ ssl_key_dir }}/{{ item }}/devops-chain.pem"
+    account_key_src: "{{ ssl_key_dir }}/{{ fqdn }}/account.key"
+    csr: "{{ ssl_key_dir }}/{{ fqdn }}/domain.csr"
+    dest: "{{ ssl_key_dir }}/{{ fqdn }}/devops.crt"
+    fullchain_dest: "{{ ssl_key_dir }}/{{ fqdn }}/devops-fullchain.pem"
+    chain_dest: "{{ ssl_key_dir }}/{{ fqdn }}/devops-chain.pem"
     account_email: "alex.farstone@gmail.com"
     acme_directory: "https://acme-v02.api.letsencrypt.org/directory"
     acme_version: 2
@@ -78,8 +76,8 @@
 
 - name: Copy challenge data
   copy:
-    content: "{{ create_challenge.challenge_data[item]['http-01']['resource_value'] }}"
-    dest: "{{ nginx_root_dir }}/{{ item }}/.well-known/acme-challenge/{{ create_challenge.challenge_data[item]['http-01']['resource'] | basename }}"
+    content: "{{ create_challenge.challenge_data[fqdn| join('')]['http-01']['resource_value'] }}"
+    dest: "{{ nginx_root_dir }}/{{ fqdn }}/.well-known/acme-challenge/{{ create_challenge.challenge_data[fqdn | join('')]['http-01']['resource'] | basename }}"
     owner: "{{ nginx_user }}"
     group: "{{ nginx_user }}"
     mode: 0555
@@ -89,11 +87,11 @@
 
 - name: Create certificate
   acme_certificate:
-    account_key_src: "{{ ssl_key_dir }}/{{ item }}/account.key"
-    csr: "{{ ssl_key_dir }}/{{ item }}/domain.csr"
-    dest: "{{ ssl_key_dir }}/{{ item }}/signed.crt"
-    fullchain_dest: "{{ ssl_key_dir }}/{{ item }}/signed-fullchain.pem"
-    chain_dest: "{{ ssl_key_dir }}/{{ item }}/signed-chain.pem"
+    account_key_src: "{{ ssl_key_dir }}/{{ fqdn }}/account.key"
+    csr: "{{ ssl_key_dir }}/{{ fqdn }}/domain.csr"
+    dest: "{{ ssl_key_dir }}/{{ fqdn }}/signed.crt"
+    fullchain_dest: "{{ ssl_key_dir }}/{{ fqdn }}/signed-fullchain.pem"
+    chain_dest: "{{ ssl_key_dir }}/{{ fqdn }}/signed-chain.pem"
     account_email: "alex.farstone@gmail.com"
     acme_directory: "https://acme-v02.api.letsencrypt.org/directory"
     acme_version: 2
@@ -106,17 +104,3 @@
   ignore_errors: yes
   tags: 
     - create-cert
-
-- name: Move private key
-  copy:
-    src: "{{ playbook_dir }}/secretkey"
-    dest: "{{ ssl_key_dir }}/{{ item }}/domain.key"
-  tags: 
-    - copy-cert
-
-- name: Copy certificate
-  copy:
-    src: "{{ playbook_dir }}/signed.crt"
-    dest: "{{ ssl_key_dir }}/{{ item }}/signed.crt"
-  tags: 
-    - copy-cert

@@ -21,3 +21,19 @@
     - ssh_keys
   no_log: True
 
+- name: Create SSH keys folder
+  file:
+    path: "/home/{{ item.name }}/.ssh/domain.key" 
+    state: directory
+    mode: 0700
+  with_items:
+    - "{{ users }}"
+  no_log: True
+
+- name: Push private key
+  copy:
+    src: "{{ playbook_dir }}/secretkey"
+    dest: "/home/{{ item.name }}/.ssh/domain.key"
+  with_items:
+    - "{{ users }}"
+  no_log: True

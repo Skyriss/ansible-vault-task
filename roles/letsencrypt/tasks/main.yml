@@ -1,8 +1,4 @@
 ---
-#- name: Prepare hostnames variable
-#  set_fact:
-#    fqdn: "{{ (lookup('template', './hosts.j2').split(',')) | replace('\\n','')}}"
-
 - name: Update Letsencrypt
   git:
     repo: "https://github.com/letsencrypt/letsencrypt"
@@ -18,7 +14,6 @@
 
 - name: Get Let'sEncrypt certificate for all domains
   include_tasks: get_cert.yml
-  loop: "{{ fqdn }}"
 
 - name: Install SSL vhost config
   template:

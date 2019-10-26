@@ -1,8 +1,4 @@
 ---
-- name: Prepare hostnames variable
-  set_fact:
-    fqdn: "{{ (lookup('template', './hosts.j2').split(',')) | replace('\\n','')}}"
-
 - name: Select Nginx user
   set_fact:
     nginx_user: "www-data"
@@ -61,21 +57,19 @@
 
 - name: Create folder for website
   file:
-    path: "{{ nginx_root_dir }}/{{ item }}"
+    path: "{{ nginx_root_dir }}/{{ fqdn }}"
     owner: root
     group: root
     mode: '0755'
     state: directory
-  loop: "{{ fqdn }}"
 
 - name: Put index.html
   template:
     src: index.j2
-    dest: "{{ nginx_root_dir }}/{{ item }}/index.html"
+    dest: "{{ nginx_root_dir }}/{{ fqdn }}/index.html"
     owner: "{{ nginx_user }}"
     group: "{{ nginx_user }}"
     mode: '0644'
-  loop: "{{ fqdn }}"
 
 - name: reload_nginx
   service:

@@ -73,7 +73,7 @@ locals {
 
 resource "local_file" "ansible_inventory" {
   count = "${var.nbr}"
-content = "all:\n    hosts:\n${join("\n",
+content = "web:\n    hosts:\n${join("\n",
             formatlist(
               "        %s:\n            ansible_host: %s\n            fqdn: %s\n            vpn_ip: 10.1.0.%s/32",
               aws_route53_record.farstone.*.fqdn,

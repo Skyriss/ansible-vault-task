@@ -1,0 +1,50 @@
+---
+- name: Create ssl directory
+  file:
+    path: "{{ ssl_key_dir }}/{{ fqdn }}"
+    owner: root
+    group: root
+    mode: 0750
+    state: directory
+
+- name: Check for cert
+  local_action: "stat path={{ playbook_dir }}/{{ fqdn }}.crt"
+  register: stat_cert
+
+- name: Check for key
+  local_action: "stat path={{ playbook_dir }}/{{ fqdn }}.key"
+  register: stat_key
+
+- name: Push SSL certificte
+  copy:
+    src: "{{ playbook_dir }}/{{ fqdn }}.crt"
+    dest: "{{ ssl_key_dir }}/{{ fqdn }}/signed.crt"   
+  no_log: True
+  when: stat_cert.stat.exists == true and stat_key.stat.exists == true
+
+- name: Push SSL key
+  copy:
+    src: "{{ playbook_dir }}/{{ fqdn }}.key"
+    dest: "{{ ssl_key_dir }}/{{ fqdn }}/domain.key"
+  no_log: True
+  when: stat_cert.stat.exists == true and stat_key.stat.exists == true
+
+- name: Install SSL vhost config
+  template:
+    src: virtualhost.conf.j2
+    dest: /etc/nginx/sites-available/{{domain_name}}-SSL.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: reload_nginx
+  when: stat_cert.stat.exists == true and stat_key.stat.exists == true
+
+- name: Create a symbolic link to sites-enabled
+  file:
+    src: /etc/nginx/sites-available/{{ domain_name }}-SSL.conf
+    dest: /etc/nginx/sites-enabled/{{ domain_name }}-SSL.conf
+    owner: root
+    group: root
+    state: link
+  notify: reload_nginx
+  when: stat_cert.stat.exists == true

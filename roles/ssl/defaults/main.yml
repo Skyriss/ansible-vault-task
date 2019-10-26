@@ -3,4 +3,3 @@ letsencrypt_remaining_days: 15
 nginx_root_dir: "/var/www"
 ssl_key_dir: "/etc/ssl/certs"
 domain_name: ""
-fqdn: ""
