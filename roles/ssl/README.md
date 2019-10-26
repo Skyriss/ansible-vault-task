@@ -12,7 +12,6 @@ This role require the following roles, that will be applied:
 
 This role has several variables. 
 ```
-letsencrypt_remaining_days: 15
 nginx_root_dir: "/var/www"
 ssl_key_dir: "/etc/ssl/certs"
 fqdn: ""

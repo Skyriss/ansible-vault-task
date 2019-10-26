@@ -1,11 +1,13 @@
 ## General
 
-This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 9 task.
-Ansible playbook, used in this repo uses five roles:
+This repo is the answer for a OPS: [Ansible](https://www.ansible.com/): 10 task.
+Ansible playbook, used in this repo uses following roles:
 * **base** - provides basic OS configuration
 * **packages** - is used to install chosen packages
 * **www** - installs nginx (using depended packages role), generates and pushes
 ``nginx.conf`` and ``vhost.conf`` files for HTTP.
+* **ssl** - pushes existing SSL certificates if exists and geberates ``vhost.conf`` files 
+for HTTPS.
 * **letsencrypt** - generates and pushes SSL certificates, generates and pushes
 ``vhost.conf`` files for HTTPS.
 * **mawalu.wireguard_private_networking** - creates a VPN server
@@ -21,6 +23,8 @@ ansible role
 > Note: You need to configure inventory file according to Readme for ``mawalu.wireguard_private_networking`` role.
 > If you use inventory file via ``run_machine.tf``, inventory file is ready to use.
 
+### Workflow overview
+
 **run_machine.tf**
 1. Creates VPS in DigitalOcean with Debian 10
 2. Deploys local SSH public key to DigitalOcean account
@@ -30,15 +34,17 @@ ansible role
 6. Runs Ansible playbook with inventory file created
 
 **nginx.yaml**
-1. Installs [nginx](https://nginx.org) webserver using apt or yum depending on OS family
-2. Uploads ``nginx.conf`` configuration file, generated according to template.
-3. Uploads single vhost configuration file, generated according to template.
-4. Reloads nginx configuration
-5. Generates SSL certificates
-6. Uploads vhost configuration file for  HTTPS, generated according to template.
-7. Installs all common software
-8. Install Nginx webserver
-9. Generates configuration for HTTP and HTTPS
+1. Creates user
+2. Pushes existing secret SSH key
+3. Installs [nginx](https://nginx.org) webserver using apt or yum depending on OS family
+4. Uploads ``nginx.conf`` configuration file, generated according to template.
+5. Uploads single vhost configuration file, generated according to template.
+6. Reloads nginx configuration
+7. Configures HTTPS:
+7.1 Pushes existing SSL certificates
+7.2 Generates SSL certificates if there is no existing
+8. Uploads vhost configuration file for  HTTPS, generated according to template.
+9. Installs all common software
 10. Creates a VPN between nodes
 
 ## Usage
@@ -72,7 +78,8 @@ playbook ``nginx.yaml`` will be run also.
 
 Run these:
 ```
-$ ansible-playbook nginx.yaml -i invent.yml -u root
+$ ansible-playbook nginx.yaml -i invent.yml -u root --vault-id inline@prompt --vault-id files@prompt
 ```
-This will install nginx using apt and upload valid config files.
+> Due to this playbook have encrypted passwords, you'll need to input password for inline and files vault-ids
+
 
